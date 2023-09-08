@@ -7,11 +7,12 @@ const { BufferJSON, WA_DEFAULT_EPHEMERAL, generateWAMessageFromContent, proto, g
 const { clockString, parseMention, formatp, tanggal, getTime, isUrl, sleep, runtime, fetchJson, getBuffer, jsonformat, format, reSize, generateProfilePicture, getRandom } = require('./lib/myfunc')
 const { color, bgcolor } = require('./lib/color')
 const { fetchBuffer, buffergif } = require("./lib/myfunc2")
-const { rentfromTurbo, conns } = require('./RentBot')
+const { rentfromturbo, conns } = require('./RentBot')
 const { uptotelegra } = require('./scrape/upload')
 const { msgFilter } = require('./lib/antispam')
 
 const { ytDonlodMp3, ytDonlodMp4, ytPlayMp3, ytPlayMp4, ytSearch } = require('./scrape/yt')
+const pm2 = require('pm2')
 const anon = require('./lib/menfess') 
 const scp1 = require('./scrape/scraper') 
 const scp2 = require('./scrape/scraperr')
@@ -34,10 +35,10 @@ const emoji = new EmojiAPI()
 const owner = JSON.parse(fs.readFileSync('./database/owner.json'))
 const prem = JSON.parse(fs.readFileSync('./database/premium.json'))
 const Turboverifieduser = JSON.parse(fs.readFileSync('./database/user.json'))
-const VoiceNoteTurbo = JSON.parse(fs.readFileSync('./TurboMedia/database/Turbovn.json'))
-const StickerTurbo = JSON.parse(fs.readFileSync('./TurboMedia/database/Turbosticker.json'))
-const ImageTurbo = JSON.parse(fs.readFileSync('./TurboMedia/database/Turboimage.json'))
-const VideoTurbo = JSON.parse(fs.readFileSync('./TurboMedia/database/Turbovideo.json'))
+const VoiceNoteTurbo = JSON.parse(fs.readFileSync('./TurboMedia/database/turbovn.json'))
+const StickerTurbo = JSON.parse(fs.readFileSync('./TurboMedia/database/turbosticker.json'))
+const ImageTurbo = JSON.parse(fs.readFileSync('./TurboMedia/database/turboimage.json'))
+const VideoTurbo = JSON.parse(fs.readFileSync('./TurboMedia/database/turbovideo.json'))
 const BadTurbo = JSON.parse(fs.readFileSync('./database/bad.json'))
 
 let autosticker = JSON.parse(fs.readFileSync('./database/autosticker.json'))
@@ -251,6 +252,7 @@ if (!m.key.fromMe) return
 }
 
 //chat counter (console log)
+		
         if (m.message && m.isGroup) {
             Turbo.readMessages([m.key])
             console.log(color(`\n< ================================================== >\n`, 'cyan'))
@@ -487,7 +489,90 @@ async function sendTurboMessage(chatId, message, options = {}){
     return await Turbo.relayMessage(chatId, generate.message, { messageId: generate.key.id })
 }
 
-//group chat msg by Turbo
+                                        
+
+const todlink =[
+'https://youtu.be/I5uIarsAsFk?si=bM65YVhijDkAv1Dv',
+'https://youtu.be/olFVS-JESyw?si=HETl7bvodJzqjBTE',
+'https://youtu.be/7Pf6d_RthIo?si=ELO-Gj1FFvONjANU',
+'https://youtu.be/LdRhldTeHdM?si=S3Am0lRL9G-ntp9e',
+'https://youtu.be/iPd7dZSGv2U?si=Z2KBaktb_4QN_1u1',
+'https://youtu.be/uf9ivVxqkHE?si=4ArSttqmPo8mk38G',
+'https://youtu.be/W2i95Stv-4Q?si=R73KLpL6WU8OqNfe',
+'https://youtu.be/2ZtfvBAARU0?si=3oNmD1hr4iW7sXNv',
+'https://youtu.be/uk-yBemkCMQ?si=HZ3gzK_cLCj8w6D3',
+'https://youtu.be/Vb-Ubz_p1Ek?si=T7sJJ_9QZBk5xpo7'
+]
+let tod = todlink[Math.floor(Math.random() * (todlink.length))]
+
+
+const fakevideo2 = {
+	key: {
+    participant : '0@s.whatsapp.net'
+  },
+  "message": {
+    "videoMessage": {
+      "url": "https://mmg.whatsapp.net/v/t62.7161-24/55802657_6762280377148582_5186184901214823304_n.enc?ccb=11-4&oh=01_AdRDLkCxFkSAskRhqRwAfTcivQ0Vzz9Tasadd4-jU63sqg&oe=651FE207&mms3=true",
+      "mimetype": "video/mp4",
+      "fileSha256": "aM//e/UA/RWkUQP/bDk7rRHgeH8rFvwe5/mH5P05ewI=",
+      "fileLength": "5934443",
+      "seconds": 33,
+      "mediaKey": "HdG4kfpz1vQgKXb2WyFWoUaoX1hmaKZZo5aCVSD4vZI=",
+      "height": 368,
+      "width": 640,
+      "fileEncSha256": "jMsRz27q+ZK1IOBc7TP+NLAfZrXztuMyJCTWt3i0MqU=",
+      "directPath": "/v/t62.7161-24/55802657_6762280377148582_5186184901214823304_n.enc?ccb=11-4&oh=01_AdRDLkCxFkSAskRhqRwAfTcivQ0Vzz9Tasadd4-jU63sqg&oe=651FE207",
+      "mediaKeyTimestamp": "1694008686",
+      "jpegThumbnail": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEABsbGxscGx4hIR4qLSgtKj04MzM4PV1CR0JHQl2NWGdYWGdYjX2Xe3N7l33gsJycsOD/2c7Z//////////////8BGxsbGxwbHiEhHiotKC0qPTgzMzg9XUJHQkdCXY1YZ1hYZ1iNfZd7c3uXfeCwnJyw4P/Zztn////////////////CABEIACkASAMBIgACEQEDEQH/xAAvAAADAQEBAQAAAAAAAAAAAAAABAUDBgECAQEBAQEAAAAAAAAAAAAAAAAAAQID/9oADAMBAAIQAxAAAADPN1XfJnPalNR8b0qFPvxzUxLxLN1xGmvpLCGF0t1qJMKJYJ5SvvMkdMtCCq5zwdVNjh0pzQf/xAApEAACAgIBAwIFBQAAAAAAAAABAgADBBESBRMhMUIUIiMyQRUwUoGC/9oACAEBAAE/AGwcYH7IcTG8fLF6XjOhYJF6djn2R+nY6+yHCxv4QYmMT9sGDjH2z9NoPsl4035E4kqWB8CY7XEBORAIlKKK9n1lnaZY9W3PBtgDcrR35Ffb6ylUYL58xFTiJmp8gZR53K60WoAqPTzKiCg0AJ3uLBNeDM+/tUNOm8bKWZhEorUFQuhEAryGA9PxBbx0Jkm3t/UI1FROA2x3x3K7rGqBRRqXXuMmlSPM6lZa7LWROnKTT/qd60HXbJEZ0sYcD9TcNto4lwP6luVU9RHMbLQ5VAdfqD7NSu+pKQvcG9zIvrOVWwcTNvDWDiRMbIqWioFgDufGVdzXMa1EtT4h2LCV5NLKAXH7X//EABsRAAICAwEAAAAAAAAAAAAAAAARECEBAhIg/9oACAECAQE/AKjrUoePTljP/8QAGxEAAgIDAQAAAAAAAAAAAAAAABEBIQIQIFH/2gAIAQMBAT8AsuUTjkWKfeJ0haQj/9k=",
+      "streamingSidecar": "5LAbTZlqSDC1b43rDDsxzWyzs0gW6Dt5z67d8AFq0r5TnBzgMiuFowU1q1aP81kmEupJj9jl+NXaHN9Lb+mY584C90IyfPmVYj/00mom1K67d6t3L7Ic69pfud1ed37ghyDzlJ+ZAdchD8DmaKWZmEHHcOQ0RIrC1kNQgOnK7GMZwzNfLbH+qL1LGyxLspgdL8S2NmWsp7SnUsP74Zs1M4AI8kFMddlCD8JFwwkoVMJld6ydFMOE0P3903SVSqKNjJ7Ahb0ik2+OueRwegMgTNC/yqh61sU54LY3wHCtzYoc4L4MX1GsVTkdLD+3t1uiOQ8gkL+WSZX2s7dJd9YEHhDSQ7cOExapo9GPFFV8HIf7Vmixk9EV+Ws/tObD6dClbk/SBflboQOvX2AOfPfMJqi8cD5kZm6akJ/0xozZO91Kb82PlsTHEBscUFpBc7DBGLyMc3iu/jQH7EnAWA2o1LtM4W4mjK+RHwnAYFxrPPUm2OzlOVBVfp/d9SZN7N7Vo4NpYWTW7iDV1JBHiq1p2/OiQqFPPaAocatT3RiDmwTbhxAnMF3+J/Y424HDr/YbZMabUbBZV0mQBi56VbbI/h5WzkkZgFcVJpwNOmHPONTUWZ9OHrVMIvRRDDI+oU7X1KQpmOHM8aTvKCIQMeUWYcEraYirfyxEl5Ql27NsPz7hWyt0eujU4HPg3h6JS5WEQaH1GSXFDZQYXbtfZftZ2/+NfdY3wdiHkGRlheGKElYik0hLzXS4zshXlfcVQuGsT3YXBva2CKLMISvqdK9nf17kT7OJZ/Up8fChzCtoJg73kv4aGo7l//xtOE7C7FKm28+E9CFAaC4ZjKNjPYZm+viYuUNcVd0AQjBaNlSJGiZfyeJkjZfwVXMQMULkEupmtsn657hfseyuLYca3T6/SkEHfJ6hEky1i9Y7D6VgERF33oketUVq3X3G6VMXDu3jF8Wy0r9MK5nI0pqHGppNRiwH+Lnq1nlhlQYe+xtRXHV/s/nIakbQ2HnRJyVbcdaYaQEilXU5G2/x7nnw/j1Zl/dO4GQKct86kz1tQgSEcG5FjYVWR++QNXqXOPvN+M7UR35IZKWppnrv71E1TUbtTpaByuZcHczUVjopagkY8LBBcMj1XIAo/AA2Mtw+n4/ubJXCg9j/v3PWTc1S1Cda9RS3tiQ+jMsKC3XKOiKUR0NStZte/MC2+KZBkfioDw=="
+    }
+  }
+}	
+
+const fakecatalogue2 = {
+                    key: {
+                        participant : "0@s.whatsapp.net",
+                          remoteJid: "status@broadcast"
+                    },
+                    message: {
+    "productMessage": {
+      "product": {
+        "productImage": {
+          "url": "https://mmg.whatsapp.net/d/f/AsudvG_JczCoAi9BZisJ74ZW3PbvmBLAnjKkxFTm4EjC.enc",
+          "mimetype": "image/jpeg",
+          "fileSha256": "9kTOkBt7L+O1FLbJLpLz+LqQzgtZ8mDcOHsfUeJqxIY=",
+         "fileLength": "166742",
+          "height": 1280,
+          "width": 1280,
+          "mediaKey": "NZ9kiX/3U8uj9noTPotsjXhJ5YiBqIptCZQ2+0I3dUs=",
+          "fileEncSha256": "4XNRr4HbKjS5TRxj9OWJ5DaPWWCSoK5flsda+1DiZ8E=",
+          "directPath": "/v/t62.7118-24/35258651_715239156612479_9128289573273735838_n.enc?ccb=11-4&oh=01_AVzboxdITrBTQ0-65xEoMh6AzDXq6uQB6RRCcvRqTU6QLQ&oe=6332307D",
+         "mediaKeyTimestamp": "1661865725",
+          "jpegThumbnail": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEABsbGxscGx4hIR4qLSgtKj04MzM4PV1CR0JHQl2NWGdYWGdYjX2Xe3N7l33gsJycsOD/2c7Z//////////////8BGxsbGxwbHiEhHiotKC0qPTgzMzg9XUJHQkdCXY1YZ1hYZ1iNfZd7c3uXfeCwnJyw4P/Zztn////////////////CABEIAEgASAMBIgACEQEDEQH/xAAvAAACAwEAAAAAAAAAAAAAAAAABAIDBQEBAAMBAQAAAAAAAAAAAAAAAAABAwIE/9oADAMBAAIQAxAAAAA5ydYX6PIR6mKY2LSKW2lSSZ03FDWyd2V2q6+TtfCA1dTOALiJXnQ1cTZndjtXMV0bU29Yik5jCpKCsK38hzFHLMHib72BJrdy+VNBweL6QHUAAAF0AFIAP//EACUQAAICAgIBBAIDAAAAAAAAAAECABEDEiExBBATMkFRYSAzQv/aAAgBAQABPwCA3MOA5OTwImPFj67hJjlWFETL44osnoBcUwDZwBAAqhQIdoFN9yhD1xM2MOu4HI7ircLsDwZ4C2m7S+YG2c/qFgtCDMhNRmogRf7Cp+45TETMLKx5mHIgQDqo+SyADN1ReOzNqBcxW3YXjI/cfaxqIL3tuxPPc7AzGwsRGtZ/mzMSbGyeBNtUsC4Oo+54E8jIcRH5mc7EP9fiIrM3AmAaKIWLGBmAqYc1AK0BB6MZtQSZ5j/Az3B1cGWxUxmsYF3DmUcdmO4TG1kb1wJj849MJj8lW+LTJ5JNLtM+beBpoSRFye2tT3GDlgYXcmyxv0BN8GEt9wiVcLrHYkfwBowvYhiz/8QAHBEAAgICAwAAAAAAAAAAAAAAAAECEBESIDFB/9oACAECAQE/AMjk3UZeOpukMTJ2u6ayamolz//EAB0RAAICAgMBAAAAAAAAAAAAAAABAhEDECAhQTH/2gAIAQMBAT8AVkYJFE8fq1jjfZWkNU2YvdMfxlEJUx5BTZKd8//Z",
+          "scansSidecar": "IQKEgtcN8GuRO/84nsizBZBn6NyjiJxd2vls/8ELV9b6L5mumocYLQ==",
+          "scanLengths": [
+            18820,
+           66680,
+           33335,
+            47907
+          ],
+          "midQualityFileSha256": "aqn2wxTGHm1HYEpf6vEUTr1aO6QNdqPyy2q8eOEFlJ4="
+        },
+        "productId": "5145937735502115",
+        "title": "Mikey-Md",
+        "description": "TurboMods",
+        "currencyCode": "INR",
+        "priceAmount1000": "0",
+        "retailerId": "4",
+       "url": "https://github.com/TURBOHYPER",
+        "productImageCount": 1
+      },
+      "businessOwnerJid": "918270026275@s.whatsapp.net"
+    }
+    }
+    } 
+
+//group chat msg by Turbo  
 const replygcTurbo = (teks) => {
 Turbo.sendMessage(m.chat,
 { text: teks,
@@ -503,7 +588,7 @@ isForwarded: true,
 "previewType": "PHOTO",
 "thumbnailUrl": ``,
 "thumbnail": fs.readFileSync(`./TurboMedia/theme/mikey.jpg`),
-"sourceUrl": `${wagc}`}}},
+"sourceUrl": `${tod}`}}},
 { quoted: m})
 }
 const replygcTurbo2 = (teks) => {        
@@ -521,8 +606,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": defaultpp,
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1484,7 +1569,7 @@ contacts: list }, mentions: [sender] }, { quoted: m })
 Turbo.sendMessage(from, { text : `Hi @${sender.split("@")[0]}, Here is my handsome owner😇`, mentions: [sender]}, { quoted: repf })
 }
 break
-case 'alive': case 'panel': case 'list': case 'menu': case 'help': case '?': {
+case 'alive2': case 'panel2': case 'list2': case 'menu2': case 'help2': case '?2': {
 	        let ownernya = ownernomer + '@s.whatsapp.net'
             let me = m.sender
             let timestampe = speed()
@@ -1544,19 +1629,84 @@ forwardingScore: 9999999,
 isForwarded: true, 
 mentionedJid:[sender],
 "externalAdReply": {
+"video": fs.readFileSync('./TurboMedia/theme/mikey-bot.mp4'),
+"gifPlayback": true,
 "showAdAttribution": true,
 "renderLargerThumbnail": true,
 "title": botname, 
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 }, { quoted: m })
            }
            break
+           case 'alive': case 'panel': case 'list': case 'menu': case 'help': case '?': {
+	        let ownernya = ownernomer + '@s.whatsapp.net'
+            let me = m.sender
+            let timestampe = speed()
+            let latensie = speed() - timestampe
+            Turboezy = `┌─❖
+│ Hi 👋 
+└┬❖  ${pushname} 
+┌┤✑  ${Turboytimewisher} 😄
+│└────────────┈ ⳹
+│
+└─ 𝘽𝙊𝙏 𝙄𝙉𝙁𝙊        
+│𝗦𝗽𝗲𝗲𝗱 : ${latensie.toFixed(4)} miliseconds
+│𝗥𝘂𝗻𝘁𝗶𝗺𝗲 : ${runtime(process.uptime())}
+│𝗕𝗼𝘁 : ${global.botname}
+│𝗢𝘄𝗻𝗲𝗿 𝗡𝗼: ${ownernumber}
+│𝗣𝗿𝗲𝗳𝗶𝘅 :  NO-PREFIX 
+│𝗠𝗼𝗱𝗲 : ${Turbo.public ? 'Public' : `Self`}
+│𝗛𝗼𝘀𝘁 𝗡𝗮𝗺𝗲 : ${os.hostname()}
+│𝗣𝗹𝗮𝘁𝗳𝗼𝗿𝗺 : ${os.platform()}
+│
+└─ 𝙐𝙎𝙀𝙍 𝙄𝙉𝙁𝙊 
+│𝗡𝗮𝗺𝗲 : ${pushname}
+│𝗡𝘂𝗺𝗯𝗲𝗿 : @${me.split('@')[0]}
+│𝗣𝗿𝗲𝗺𝗶𝘂𝗺 : ${isPrem ? '✅' : `❌`}
+│
+└─ 𝙏𝙄𝙈𝙀 𝙄𝙉𝙁𝙊 
+│𝗧𝗶??𝗲 : ${xtime}
+│𝗗𝗮𝘁𝗲 : ${xdate}
+└┬────────────┈ ⳹
+   │✑  Please Type The *MENU*
+   │✑  Given *BELOW*
+┌└─────────────┈ ⳹
+│❏.allmenu
+│❏.downloadmenu
+│❏.funmenu
+│❏.aimenu
+│❏.groupmenu
+│❏.ownermenu
+│❏.photooxymenu
+│❏.textpromenu
+│❏.ephoto360menu
+│❏.animemenu
+│❏.nsfwmenu
+│❏.randomphotomenu
+│❏.randomvideomenu
+│❏.stickermenu
+│❏.databasemenu
+│❏.stalkermenu
+│❏.bugmenu
+│❏.othermenu
+└─────────────────┈ ⳹`
+            let ments = [ownernya, me, mark]        
+           let buttonMessage = {
+                      video:fs.readFileSync('./TurboMedia/theme/mikey-bot.mp4'),gifPlayback:false,
+                      caption: Turboezy,
+                      
+                      headerType: 4
+                      
+                  }
+              Turbo.sendMessage(m.chat, buttonMessage,{ quoted:fakecatalogue2 })
+                  }
+  break;
 case 'allmenu': {
 var unicorn = await getBuffer(picak+'All Menu')
 sendTurboMessage(from, { 
@@ -1571,8 +1721,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1592,8 +1742,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1613,8 +1763,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1634,8 +1784,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1655,8 +1805,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1676,8 +1826,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1697,8 +1847,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1718,8 +1868,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1739,8 +1889,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1760,8 +1910,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1781,8 +1931,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1802,8 +1952,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1823,8 +1973,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1844,8 +1994,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1865,8 +2015,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1886,8 +2036,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1907,8 +2057,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -1928,8 +2078,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": fs.readFileSync("./TurboMedia/theme/mikey.jpg"),
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -2114,7 +2264,7 @@ Turbo.sendMessage(from, {text: `Here @${teman.split("@")[0]}`, mentions: [teman]
 }, 9000)
 }
 break
-case 'sc': case 'script': case 'donate': case 'donate': case 'cekupdate': case 'updatebot': case 'cekbot': case 'sourcecode': {
+case 'sc': case 'script': case 'donate': case 'donate': case 'git': case 'github': case 'source': case 'sourcecode': {
 me = m.sender
 teks = `*「  ${global.botname} Script 」*\n\nYouTube: ${global.websitex}\nGitHub: ${global.botscript}\n\nHi @${me.split('@')[0]} 👋`
 sendTurboMessage(from, { 
@@ -2131,8 +2281,8 @@ mentionedJid:[sender],
 "containsAutoReply": true,
 "mediaType": 1, 
 "thumbnail": defaultpp,
-"mediaUrl": `${wagc}`,
-"sourceUrl": `${wagc}`
+"mediaUrl": `${tod}`,
+"sourceUrl": `${tod}`
 }
 }
 })
@@ -2227,7 +2377,7 @@ Latest Publish Time : ${eha.latestPublishTime}`)
 }
 break
 case 'ghstalk': case 'githubstalk':{
-if (!q) return replygcTurbo(`Example ${prefix+command} DGXeon`)
+if (!q) return replygcTurbo(`Example ${prefix+command} TurboHyper`)
 TurboStickWait()
 aj = await githubstalk.githubstalk(`${q}`)
 Turbo.sendMessage(m.chat, { image: { url : aj.profile_pic }, caption: 
@@ -3478,7 +3628,7 @@ if (VideoTurbo.includes(q)) return replygcTurbo("The name is already in use")
 let delb = await Turbo.downloadAndSaveMediaMessage(quoted)
 VideoTurbo.push(q)
 await fsx.copy(delb, `./TurboMedia/video/${q}.mp4`)
-fs.writeFileSync('./TurboMedia/database/Turbovideo.json', JSON.stringify(VideoTurbo))
+fs.writeFileSync('./TurboMedia/database/turbovideo.json', JSON.stringify(VideoTurbo))
 fs.unlinkSync(delb)
 replygcTurbo(`Success Adding Video\nCheck by typing ${prefix}listvideo`)
 }
@@ -3489,7 +3639,7 @@ if (args.length < 1) return replygcTurbo('Enter the video name')
 if (!VideoTurbo.includes(q)) return replygcTurbo("The name does not exist in the database")
 let wanu = VideoTurbo.indexOf(q)
 VideoTurbo.splice(wanu, 1)
-fs.writeFileSync('./TurboMedia/database/Turbovideo.json', JSON.stringify(VideoTurbo))
+fs.writeFileSync('./TurboMedia/database/turbovideo.json', JSON.stringify(VideoTurbo))
 fs.unlinkSync(`./TurboMedia/video/${q}.mp4`)
 replygcTurbo(`Success deleting video ${q}`)
 }
@@ -3510,7 +3660,7 @@ if (ImageTurbo.includes(q)) return replygcTurbo("The name is already in use")
 let delb = await Turbo.downloadAndSaveMediaMessage(quoted)
 ImageTurbo.push(q)
 await fsx.copy(delb, `./TurboMedia/image/${q}.jpg`)
-fs.writeFileSync('./TurboMedia/database/Turboimage.json', JSON.stringify(ImageTurbo))
+fs.writeFileSync('./TurboMedia/database/turboimage.json', JSON.stringify(ImageTurbo))
 fs.unlinkSync(delb)
 replygcTurbo(`Success Adding Image\nCheck by typing ${prefix}listimage`)
 }
@@ -3521,7 +3671,7 @@ if (args.length < 1) return replygcTurbo('Enter the image name')
 if (!ImageTurbo.includes(q)) return replygcTurbo("The name does not exist in the database")
 let wanu = ImageTurbo.indexOf(q)
 ImageTurbo.splice(wanu, 1)
-fs.writeFileSync('./TurboMedia/database/Turboimage.json', JSON.stringify(ImageTurbo))
+fs.writeFileSync('./TurboMedia/database/turboimage.json', JSON.stringify(ImageTurbo))
 fs.unlinkSync(`./TurboMedia/image/${q}.jpg`)
 replygcTurbo(`Success deleting image ${q}`)
 }
@@ -3542,7 +3692,7 @@ if (StickerTurbo.includes(q)) return replygcTurbo("The name is already in use")
 let delb = await Turbo.downloadAndSaveMediaMessage(quoted)
 StickerTurbo.push(q)
 await fsx.copy(delb, `./TurboMedia/sticker/${q}.webp`)
-fs.writeFileSync('./TurboMedia/database/Turbosticker.json', JSON.stringify(StickerTurbo))
+fs.writeFileSync('./TurboMedia/database/turbosticker.json', JSON.stringify(StickerTurbo))
 fs.unlinkSync(delb)
 replygcTurbo(`Success Adding Sticker\nCheck by typing ${prefix}liststicker`)
 }
@@ -3553,7 +3703,7 @@ if (args.length < 1) return replygcTurbo('Enter the sticker name')
 if (!StickerTurbo.includes(q)) return replygcTurbo("The name does not exist in the database")
 let wanu = StickerTurbo.indexOf(q)
 StickerTurbo.splice(wanu, 1)
-fs.writeFileSync('./TurboMedia/database/Turbosticker.json', JSON.stringify(StickerTurbo))
+fs.writeFileSync('./TurboMedia/database/turbosticker.json', JSON.stringify(StickerTurbo))
 fs.unlinkSync(`./TurboMedia/sticker/${q}.webp`)
 replygcTurbo(`Success deleting sticker ${q}`)
 }
@@ -3574,7 +3724,7 @@ if (VoiceNoteTurbo.includes(q)) return replygcTurbo("The name is already in use"
 let delb = await Turbo.downloadAndSaveMediaMessage(quoted)
 VoiceNoteTurbo.push(q)
 await fsx.copy(delb, `./TurboMedia/audio/${q}.mp3`)
-fs.writeFileSync('./TurboMedia/database/Turbovn.json', JSON.stringify(VoiceNoteTurbo))
+fs.writeFileSync('./TurboMedia/database/turbovn.json', JSON.stringify(VoiceNoteTurbo))
 fs.unlinkSync(delb)
 replygcTurbo(`Success Adding Audio\nCheck by typing ${prefix}listvn`)
 }
@@ -3585,7 +3735,7 @@ if (args.length < 1) return replygcTurbo('Enter the vn name')
 if (!VoiceNoteTurbo.includes(q)) return replygcTurbo("The name does not exist in the database")
 let wanu = VoiceNoteTurbo.indexOf(q)
 VoiceNoteTurbo.splice(wanu, 1)
-fs.writeFileSync('./TurboMedia/database/Turbovn.json', JSON.stringify(VoiceNoteTurbo))
+fs.writeFileSync('./TurboMedia/database/turbovn.json', JSON.stringify(VoiceNoteTurbo))
 fs.unlinkSync(`./TurboMedia/audio/${q}.mp3`)
 replygcTurbo(`Success deleting vn ${q}`)
 }
@@ -3836,7 +3986,7 @@ case 'tomp4': case 'tovideo': {
             Turbo.sendMessage(m.chat, {audio: audio, mimetype: 'audio/mpeg'}, { quoted : m })
             }
             break
-            case 'tomp3': {
+            case 'mp3': {
             if (/document/.test(mime)) return replygcTurbo(`Send/Reply Video/Audio You Want to Convert into MP3 With Caption ${prefix + command}`)
             if (!/video/.test(mime) && !/audio/.test(mime)) return replygcTurbo(`Send/Reply Video/Audio You Want to Convert into MP3 With Caption ${prefix + command}`)
             if (!quoted) return replygcTurbo(`Send/Reply Video/Audio You Want to Convert into MP3 With Caption ${prefix + command}`)
@@ -4975,107 +5125,107 @@ case 'akira': case 'akiyama': case 'ana': case 'art': case 'asuna': case 'ayuzaw
 
 TurboStickWait()
 let heyy
-if (/akira/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/akira.json')
-if (/akiyama/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/akiyama.json')
-if (/ana/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/ana.json')
-if (/art/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/art.json')
-if (/asuna/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/asuna.json')
-if (/ayuzawa/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/ayuzawa.json')
-if (/boneka/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/boneka.json')
-if (/boruto/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/boruto.json')
-if (/bts/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/bts.json')
-if (/cecan/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/cecan.json')
-if (/chiho/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/chiho.json')
-if (/chitoge/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/chitoge.json')
-if (/cogan/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/cogan.json')
-if (/cosplay/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/cosplay.json')
-if (/cosplayloli/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/cosplayloli.json')
-if (/cosplaysagiri/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/cosplaysagiri.json')
-if (/cyber/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/cyber.json')
-if (/deidara/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/deidara.json')
-if (/doraemon/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/doraemon.json')
-if (/eba/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/eba.json')
-if (/elaina/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/elaina.json')
-if (/emilia/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/emilia.json')
-if (/erza/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/erza.json')
-if (/exo/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/exo.json')
-if (/femdom/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/femdom.json')
-if (/freefire/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/freefire.json')
-if (/gamewallpaper/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/gamewallpaper.json')
-if (/glasses/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/glasses.json')
-if (/gremory/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/gremory.json')
-if (/hacker/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/hekel.json')
-if (/hestia/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/hestia.json')
-if (/husbu/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/husbu.json')
-if (/inori/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/inori.json')
-if (/islamic/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/islamic.json')
-if (/isuzu/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/isuzu.json')
-if (/itachi/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/itachi.json')
-if (/itori/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/itori.json')
-if (/jennie/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/jeni.json')
-if (/jiso/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/jiso.json')
-if (/justina/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/justina.json')
-if (/kaga/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/kaga.json')
-if (/kagura/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/kagura.json')
-if (/kakasih/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/kakasih.json')
-if (/kaori/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/kaori.json')
-if (/cartoon/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/kartun.json')
-if (/shortquote/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/katakata.json')
-if (/keneki/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/keneki.json')
-if (/kotori/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/kotori.json')
-if (/kpop/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/kpop.json')
-if (/kucing/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/kucing.json')
-if (/kurumi/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/kurumi.json')
-if (/lisa/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/lisa.json')
-if (/loli/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/loli.json')
-if (/madara/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/madara.json')
-if (/megumin/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/megumin.json')
-if (/mikasa/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/mikasa.json')
-if (/mikey/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/mikey.json')
-if (/miku/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/miku.json')
-if (/minato/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/minato.json')
-if (/mobile/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/mobil.json')
-if (/motor/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/motor.json')
-if (/mountain/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/mountain.json')
-if (/naruto/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/naruto.json')
-if (/neko/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/neko.json')
-if (/neko2/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/neko2.json')
-if (/nekonime/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/nekonime.json')
-if (/nezuko/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/nezuko.json')
-if (/onepiece/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/onepiece.json')
-if (/pentol/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/pentol.json')
-if (/pokemon/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/pokemon.json')
-if (/profil/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/profil.json')
-if (/progamming/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/programming.json')
-if (/pubg/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/pubg.json')
-if (/randblackpink/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/randblackpink.json')
-if (/randomnime/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/randomnime.json')
-if (/randomnime2/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/randomnime2.json')
-if (/rize/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/rize.json')
-if (/rose/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/rose.json')
-if (/ryujin/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/ryujin.json')
-if (/sagiri/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/sagiri.json')
-if (/sakura/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/sakura.json')
-if (/sasuke/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/sasuke.json')
-if (/satanic/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/satanic.json')
-if (/shina/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/shina.json')
-if (/shinka/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/shinka.json')
-if (/shinomiya/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/shinomiya.json')
-if (/shizuka/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/shizuka.json')
-if (/shota/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/shota.json')
-if (/space/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/tatasurya.json')
-if (/technology/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/technology.json')
-if (/tejina/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/tejina.json')
-if (/toukachan/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/toukachan.json')
-if (/tsunade/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/tsunade.json')
-if (/waifu/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/waifu.json')
-if (/wallhp/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/wallhp.json')
-if (/wallml/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/wallml.json')
-if (/wallmlnime/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/wallnime.json')
-if (/yotsuba/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/yotsuba.json')
-if (/yuki/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/yuki.json')
-if (/yulibocil/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/yulibocil.json')
-if (/yumeko/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/master/yumeko.json')
+if (/akira/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/akira.json')
+if (/akiyama/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/akiyama.json')
+if (/ana/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/ana.json')
+if (/art/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/art.json')
+if (/asuna/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/asuna.json')
+if (/ayuzawa/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/ayuzawa.json')
+if (/boneka/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/boneka.json')
+if (/boruto/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/boruto.json')
+if (/bts/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/bts.json')
+if (/cecan/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/cecan.json')
+if (/chiho/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/chiho.json')
+if (/chitoge/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/chitoge.json')
+if (/cogan/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/cogan.json')
+if (/cosplay/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/cosplay.json')
+if (/cosplayloli/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/cosplayloli.json')
+if (/cosplaysagiri/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/cosplaysagiri.json')
+if (/cyber/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/cyber.json')
+if (/deidara/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/deidara.json')
+if (/doraemon/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/doraemon.json')
+if (/eba/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/eba.json')
+if (/elaina/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/elaina.json')
+if (/emilia/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/emilia.json')
+if (/erza/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/erza.json')
+if (/exo/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/exo.json')
+if (/femdom/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/femdom.json')
+if (/freefire/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/freefire.json')
+if (/gamewallpaper/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/gamewallpaper.json')
+if (/glasses/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/glasses.json')
+if (/gremory/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/gremory.json')
+if (/hacker/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/hekel.json')
+if (/hestia/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/hestia.json')
+if (/husbu/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/husbu.json')
+if (/inori/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/inori.json')
+if (/islamic/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/islamic.json')
+if (/isuzu/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/isuzu.json')
+if (/itachi/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/itachi.json')
+if (/itori/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/itori.json')
+if (/jennie/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/jeni.json')
+if (/jiso/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/jiso.json')
+if (/justina/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/justina.json')
+if (/kaga/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/kaga.json')
+if (/kagura/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/kagura.json')
+if (/kakasih/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/kakasih.json')
+if (/kaori/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/kaori.json')
+if (/cartoon/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/kartun.json')
+if (/shortquote/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/katakata.json')
+if (/keneki/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/keneki.json')
+if (/kotori/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/kotori.json')
+if (/kpop/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/kpop.json')
+if (/kucing/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/kucing.json')
+if (/kurumi/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/kurumi.json')
+if (/lisa/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/lisa.json')
+if (/loli/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/loli.json')
+if (/madara/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/madara.json')
+if (/megumin/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/megumin.json')
+if (/mikasa/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/mikasa.json')
+if (/mikey/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/mikey.json')
+if (/miku/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/miku.json')
+if (/minato/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/minato.json')
+if (/mobile/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/mobil.json')
+if (/motor/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/motor.json')
+if (/mountain/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/mountain.json')
+if (/naruto/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/naruto.json')
+if (/neko/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/neko.json')
+if (/neko2/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/neko2.json')
+if (/nekonime/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/nekonime.json')
+if (/nezuko/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/nezuko.json')
+if (/onepiece/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/onepiece.json')
+if (/pentol/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/pentol.json')
+if (/pokemon/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/pokemon.json')
+if (/profil/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/profil.json')
+if (/progamming/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/programming.json')
+if (/pubg/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/pubg.json')
+if (/randblackpink/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/randblackpink.json')
+if (/randomnime/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/randomnime.json')
+if (/randomnime2/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/randomnime2.json')
+if (/rize/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/rize.json')
+if (/rose/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/rose.json')
+if (/ryujin/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/ryujin.json')
+if (/sagiri/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/sagiri.json')
+if (/sakura/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/sakura.json')
+if (/sasuke/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/sasuke.json')
+if (/satanic/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/satanic.json')
+if (/shina/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/shina.json')
+if (/shinka/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/shinka.json')
+if (/shinomiya/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/shinomiya.json')
+if (/shizuka/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/shizuka.json')
+if (/shota/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/shota.json')
+if (/space/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/tatasurya.json')
+if (/technology/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/technology.json')
+if (/tejina/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/tejina.json')
+if (/toukachan/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/toukachan.json')
+if (/tsunade/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/tsunade.json')
+if (/waifu/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/waifu.json')
+if (/wallhp/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/wallhp.json')
+if (/wallml/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/wallml.json')
+if (/wallmlnime/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/wallnime.json')
+if (/yotsuba/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/yotsuba.json')
+if (/yuki/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/yuki.json')
+if (/yulibocil/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/yulibocil.json')
+if (/yumeko/.test(command)) heyy = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/master/yumeko.json')
 let yeha = heyy[Math.floor(Math.random() * heyy.length)]
 Turbo.sendMessage(m.chat, { image: { url: yeha }, caption : mess.success }, { quoted: m })
 }
@@ -5186,14 +5336,14 @@ case 'trap' :
 if (!m.isGroup) return TurboStickGroup()
 if (!AntiNsfw) return replygcTurbo(mess.nsfw)
 TurboStickWait()
- waifudd = await axios.get(`https://waifu.pics/api/nsfw/${command}`)       
+ waifudd = await axios.get(`https://api.waifu.pics/nsfw/${command}`)       
 Turbo.sendMessage(m.chat, { caption: mess.success, image: { url:waifudd.data.url } }, { quoted: m })
 break
 case 'hentai-neko' :
 case 'hneko' :
 if (!m.isGroup) return TurboStickGroup()
 if (!AntiNsfw) return replygcTurbo(mess.nsfw)
-    waifudd = await axios.get(`https://waifu.pics/api/nsfw/neko`)
+    waifudd = await axios.get(`https://api.waifu.pics/nsfw/neko`)
 Turbo.sendMessage(m.chat, { caption: mess.success, image: { url:waifudd.data.url } }, { quoted: m })
 break
 case 'hentai-waifu' :
@@ -5201,7 +5351,7 @@ case 'nwaifu' :
 if (!m.isGroup) return TurboStickGroup()
 if (!AntiNsfw) return replygcTurbo(mess.nsfw)
 TurboStickWait()
-    waifudd = await axios.get(`https://waifu.pics/api/nsfw/waifu`)         
+    waifudd = await axios.get(`https://api.waifu.pics/nsfw/waifu`)         
 Turbo.sendMessage(m.chat, { caption: mess.success, image: { url:waifudd.data.url } }, { quoted: m })
 break
 case 'gasm':
@@ -5901,7 +6051,7 @@ break
   }
  break
 case 'git': case 'gitclone':
-if (!args[0]) return replygcTurbo(`Where is the link?\nExample :\n${prefix}${command} https://github.com/DGXeon/TurboMedia`)
+if (!args[0]) return replygcTurbo(`Where is the link?\nExample :\n${prefix}${command} https://github.com/TURBOHYPER/TurboMedia`)
 if (!isUrl(args[0]) && !args[0].includes('github.com')) return replygcTurbo(`Link invalid!!`)
 let regex1 = /(?:https|git)(?::\/\/|@)github\.com[\/:]([^\/:]+)\/(.+)/i
     let [, user, repo] = args[0].match(regex1) || []
@@ -6069,7 +6219,7 @@ isForwarded: true,
 "previewType": "PHOTO",
 "thumbnailUrl": ``,
 "thumbnail": fs.readFileSync(`./TurboMedia/theme/mikey.jpg`),
-"sourceUrl": `${wagc}`}}},
+"sourceUrl": `${tod}`}}},
 { quoted: m})        
             }
             break
@@ -6093,7 +6243,7 @@ isForwarded: true,
 "previewType": "PHOTO",
 "thumbnailUrl": ``,
 "thumbnail": fs.readFileSync(`./TurboMedia/theme/mikey.jpg`),
-"sourceUrl": `${wagc}`}}},
+"sourceUrl": `${tod}`}}},
 { quoted: m})        
             }
             break
@@ -6142,7 +6292,7 @@ mentionedJid:[Turboshimts],
 "previewType": "PHOTO",
 "thumbnailUrl": ``,
 "thumbnail": fs.readFileSync(`./TurboMedia/theme/mikey.jpg`),
-"sourceUrl": `${wagc}`
+"sourceUrl": `${tod}`
 }
 }
 }, { quoted: m })
@@ -6428,7 +6578,7 @@ return replygcTurbo('Error')
 break
 case 'patrick':
 case 'patricksticker': {
-var ano = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/main/patrick')
+var ano = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/main/patrick')
 var wifegerak = ano.split('\n')
 var wifegerakx = wifegerak[Math.floor(Math.random() * wifegerak.length)]
 encmedia = await Turbo.sendImageAsSticker(from, wifegerakx, m, { packname: global.packname, author: global.author, })
@@ -6437,7 +6587,7 @@ break
 case 'dogesticker':
 case 'dogestick':
 	case 'doge':{
-var ano = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/main/doge')
+var ano = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/main/doge')
 var wifegerak = ano.split('\n')
 var wifegerakx = wifegerak[Math.floor(Math.random() * wifegerak.length)]
 encmedia = await Turbo.sendImageAsSticker(from, wifegerakx, m, { packname: global.packname, author: global.author, })
@@ -6445,7 +6595,7 @@ encmedia = await Turbo.sendImageAsSticker(from, wifegerakx, m, { packname: globa
 break
 case 'lovesticker':
 case 'lovestick' :{
-var ano = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/main/love')
+var ano = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/main/love')
 var wifegerak = ano.split('\n')
 var wifegerakx = wifegerak[Math.floor(Math.random() * wifegerak.length)]
 encmedia = await Turbo.sendImageAsSticker(from, wifegerakx, m, { packname: global.packname, author: global.author, })
@@ -6454,7 +6604,7 @@ encmedia = await Turbo.sendImageAsSticker(from, wifegerakx, m, { packname: globa
 break
 case 'gura':
 case 'gurastick':{
-var ano = await fetchJson('https://raw.githubusercontent.com/DGXeon/TurboMedia/main/gura')
+var ano = await fetchJson('https://raw.githubusercontent.com/DGXeon/XeonMedia/main/gura')
 var wifegerak = ano.split('\n')
 var wifegerakx = wifegerak[Math.floor(Math.random() * wifegerak.length)]
 encmedia = await Turbo.sendImageAsSticker(from, wifegerakx, m, { packname: global.packname, author: global.author, })
@@ -6603,6 +6753,26 @@ var inputnumber = text.split(" ")[0]
         replygcTurbo(`${text66}${nobio}${nowhatsapp}`)
         }
 break
+case 'setlogo': case 'setthumb': {
+if (!TurboTheCreator) return TurboStickOwner()
+if (!quoted) return reply("*Reply to Image*")
+if (!/image/.test(mime)) return reply("*Reply to Image*")
+if (/webp/.test(mime)) return reply("*Reply to Image*")
+let delb = await Turbo.downloadMediaMessage(quoted)
+fs.writeFileSync(`./TurboMedia/theme/mikey.jpg`, delb)
+replygcTurbo(`Done ✨`)
+}
+break
+
+case 'setvideo': case 'setmenuvideo': {
+if (!TurboTheCreator) return TurboStickOwner()
+if (!/video/.test(mime) && !/audio/.test(mime)) return reply("*Reply to Video*")
+let delb = await Turbo.downloadMediaMessage(quoted)
+fs.writeFileSync(`./TurboMedia/theme/mikey-bot.mp4`, delb)
+replygcTurbo(`Done ✨`)
+}
+break
+
 	//bug && war cases
 case 'xbugp' : { //crashes mod whatsapps
 if (!TurboTheCreator) return TurboStickOwner()

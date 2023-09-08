@@ -14,7 +14,7 @@ const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream
 if (global.conns instanceof Array) console.log()
 else global.conns = []
 
-const rentfromxeon = async (Turbo, m, from) => {
+const rentfromturbo = async (Turbo, m, from) => {
 const { sendImage, sendMessage } = Turbo;
 const { reply, sender } = m;
 const { state, saveCreds } = await useMultiFileAuthState(path.join(__dirname, `./database/rentbot/${sender.split("@")[0]}`), log({ level: "silent" }));
@@ -74,7 +74,7 @@ if (kay.key && kay.key.remoteJid === 'status@broadcast') return
 if (!Turbo.public && !kay.key.fromMe && chatUpdate.type === 'notify') return
 if (kay.key.id.startsWith('BAE5') && kay.key.id.length === 16) return
 m = smsg(Turbo, kay, store)
-require('./XeonCheems7')(Turbo, m, chatUpdate, store)
+require('./Turbo')(Turbo, m, chatUpdate, store)
 } catch (err) {
 console.log(err)}
 })
@@ -333,7 +333,7 @@ console.log(e)
 }
 }
 
-module.exports = { rentfromxeon, conns }
+module.exports = { rentfromturbo, conns }
 
 let file = require.resolve(__filename)
 fs.watchFile(file, () => {
